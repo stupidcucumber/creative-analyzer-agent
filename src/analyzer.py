@@ -45,13 +45,16 @@ class Analyzer:
         database: str,
         creatives: list[pathlib.Path], 
         additional_metadata: pd.DataFrame, 
-        analyzer_model: GeminiAnalyzerModel
+        analyzer_model: GeminiAnalyzerModel,
+        prompt: str | None = None
     ) -> None:
         self.database = database
 
         self.creatives = creatives
         self.additional_metadata = additional_metadata
         self.analyzer_model = analyzer_model
+
+        self.prompt = prompt if prompt else SYSTEM_PROMPT
 
     def _analyze_content(self, content_path: pathlib.Path) -> AgentOutputContentCharacteristics | None:
 
@@ -66,7 +69,7 @@ class Analyzer:
                 types.Part(
                     inline_data=types.Blob(data=content_path.read_bytes(), mime_type=mime_type)
                 ),
-                types.Part(text=SYSTEM_PROMPT + AgentOutputContentCharacteristics.generate_prompt())
+                types.Part(text=self.prompt + AgentOutputContentCharacteristics.generate_prompt())
             ]
         )
         
@@ -76,8 +79,14 @@ class Analyzer:
 
         content = types.Content(
             parts=[
-                types.Part(text=SYSTEM_PROMPT + AgentOutputContentCharacteristics.generate_prompt()),
-                types.Part(text=post)
+                types.Part(
+                    text=(
+                        self.prompt + 
+                        AgentOutputPostTextCharacteristics.generate_prompt() +
+                        """\n\n--- ANALYZE POST BELOW ---\n""" +
+                        post
+                    )
+                ),
             ]
         )
         
@@ -107,7 +116,6 @@ class Analyzer:
 
         return get_aspect_ratio(width=width, height=height)
 
-
     def _extract_algorithmic_metadata(self, index: int, creative_path: pathlib.Path, published: bool = True) -> AlgorithmicMetadata:
 
         if published:
@@ -133,40 +141,33 @@ class Analyzer:
             content_format=self._extract_content_format(content_path=creative_path),
             content_id=index
         )
-    
-    def save_prompts(self, path: pathlib.Path) -> None:
-        """Saves a system prompt into a TXT file.
-        
-        Parameters
-        ----------
-        path : pathlib.Path
-            Path to the file that will store a system prompt.
-        """
-        path.write_text(SYSTEM_PROMPT)
 
-    def analyze(self) -> list[DatabaseEntry]:
+    def analyze(self, evaluate: bool = False) -> tuple[list[DatabaseEntry], list[int]]:
 
         entries = []
+        failed_entries = []
         for creative in self.creatives:
 
             creative_id = int(creative.stem)
+            print("Analyzing creative: ", creative)
 
+            print("\tAnalyzing post.")
             if creative_id in self.additional_metadata.index:
-                print("Analyzing post.")
                 agent_output_post_characteristics = self._analyze_post(post=self.additional_metadata.loc[creative_id, "ad_text"])
                 
             else:
-                print(f"{creative} did not have enough data for adding to the database. Post analyzation will be skipped.")
+                print(f"\t{creative} did not have enough data for adding to the database. Post analyzation will be skipped.")
                 agent_output_post_characteristics = AgentOutputPostTextCharacteristics.null()
 
-            print("Analyzing content.")
+            print("\tAnalyzing content.")
             agent_output_content_characteristics = self._analyze_content(content_path=creative)
 
             if (agent_output_content_characteristics is None or agent_output_post_characteristics is None):
                 print(f"Post with id={creative_id} could not be processed.")
+                failed_entries.append(creative_id)
                 continue
 
-            print("Extracting metadata.")
+            print("\tExtracting metadata.")
             algorithmic_metadata = self._extract_algorithmic_metadata(
                 creative_path=creative, 
                 published=creative_id in self.additional_metadata.index,
@@ -179,8 +180,9 @@ class Analyzer:
                 **algorithmic_metadata.model_dump()
             ) # pyright: ignore
 
-            entry.insert_into_table("marketing", db_path=self.database)
+            if not evaluate:
+                entry.insert_into_table("marketing", db_path=self.database)
 
             entries.append(entry)
 
-        return entries
+        return entries, failed_entries

@@ -68,6 +68,9 @@ Other columns that might be helpful:
 
 ### Prompt evolution
 
+1. prompt_v0.txt included only basic instructions like persona and task.
+2. prompt_v1.txt added "CRITICAL INSTRUCTIONS FOR OUTPUT", which helps LLM to structure output better. Like in what format it must provide and what to put if there is no CTA in the post/content.
+
 ## Improvements
 
 

@@ -1,5 +1,5 @@
 from google import genai
-from google.genai import types
+from google.genai import types, errors
 
 from typing import TypeVar, Type
 import os
@@ -31,21 +31,20 @@ class GeminiAnalyzerModel:
         result: S | None = None
 
         for retry in range(self.retries + 1):
-
-            print("Retry number: ", retry)
-
-            response = self.genai_client.models.generate_content(
-                model=str(self.model_type),
-                contents=content,
-                config=self.generation_config
-            )
-
-            if response.text == None:
-                print("Failed to generate a response. Trying again.")
-                time.sleep(self.retry_delay)
-                continue
             
             try:
+
+                response = self.genai_client.models.generate_content(
+                    model=str(self.model_type),
+                    contents=content,
+                    config=self.generation_config
+                )
+
+                if response.text == None:
+                    print("Failed to generate a response. Trying again.")
+                    time.sleep(self.retry_delay)
+                    continue
+
                 result = structure_class.model_validate_json(response.text)
                 break
 
@@ -54,5 +53,9 @@ class GeminiAnalyzerModel:
                 print(f"Error: ", e)
                 result = None
                 break
+
+            except errors.ServerError as e:
+                print("Encountered: ", e)
+                time.sleep(10)
 
         return result
