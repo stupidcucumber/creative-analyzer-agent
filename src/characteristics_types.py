@@ -1,8 +1,10 @@
 from pydantic import BaseModel, Field
 
 from typing import Optional, get_args, get_origin, Union, Self
+from enum import StrEnum
 import json
 import random
+import sqlite3
 
 from src.enums.hook_type import HookTypes, HookVisualFormatType
 from src.enums.emotional_valence import EmotionalValenceType
@@ -78,6 +80,10 @@ class AgentCharacteristics(BaseModel):
                 random_member = random.choice(list(actual_type))
                 data[field_name] = random_member
 
+            elif isinstance(actual_type, type) and issubclass(actual_type, StrEnum):
+                random_enum = random.choice([value for _, value in actual_type.__members__.items()])
+                data[field_name] = random_enum
+
             # 2. Handle standard strings (use the description or a placeholder)
             elif actual_type is str:
                 data[field_name] = f"Sample text for {field_name.replace('_', ' ')}"
@@ -85,6 +91,9 @@ class AgentCharacteristics(BaseModel):
             # 3. Handle integers
             elif actual_type is int:
                 data[field_name] = random.randint(1, 10)
+
+            elif actual_type is bool:
+                data[field_name] = random.choice(seq=[True, False])
 
             # Default to None for unhandled types
             else:
@@ -229,6 +238,7 @@ class AgentOutputPostTextCharacteristics(
 
 class AlgorithmicMetadata(BaseModel):
     published: bool
+    content_id: int
     content_type: ContentType
     content_format: str
     product: str | None = None
@@ -238,4 +248,46 @@ class AlgorithmicMetadata(BaseModel):
 
 
 class DatabaseEntry(AlgorithmicMetadata, AgentOutputContentCharacteristics, AgentOutputPostTextCharacteristics):
-    pass
+
+    def insert_into_table(self, table_name: str, db_path: str = "database.db"):
+        # 1. Convert the model to a dictionary, excluding unset values if desired
+        data = self.model_dump(exclude_none=True)
+        
+        if not data:
+            raise ValueError("No data present to insert.")
+
+        columns = ", ".join(data.keys())
+        # Create placeholders (e.g., :field_1, :field_2) for safe injection
+        placeholders = ", ".join([f":{key}" for key in data.keys()])
+        
+        sql = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
+
+        # 2. Execute using your preferred database driver
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(sql, data)
+            conn.commit()
+            print(f"Record inserted into {table_name} successfully.")
+
+    @classmethod
+    def create_table(cls, table_name: str, db_path: str = "data.sqlite3"):
+
+        type_map = {
+            str: "TEXT",
+            int: "INTEGER",
+            bool: "INTEGER",
+        }
+        
+        columns = []
+        for name, field in cls.model_fields.items():
+            # Get the core type (handling Optional/Union)
+            base_type = get_args(field.annotation)[0] if get_origin(field.annotation) is Union else field.annotation
+            sql_type = type_map.get(base_type, "TEXT") # Default Enums/others to TEXT
+            null_stmt = "NOT NULL" if field.is_required() else ""
+            columns.append(f"{name} {sql_type} {null_stmt}")
+
+        column_str = ", ".join(columns)
+        sql = f"CREATE TABLE IF NOT EXISTS {table_name} (id INTEGER PRIMARY KEY AUTOINCREMENT, {column_str});"
+        
+        with sqlite3.connect(db_path) as conn:
+            conn.execute(sql)
