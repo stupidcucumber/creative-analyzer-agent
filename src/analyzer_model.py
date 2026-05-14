@@ -27,8 +27,11 @@ class GeminiAnalyzerModel:
         self.retries = retries
         self.retry_delay = retry_delay
 
-    def structured_generation(self, content: types.Content, structure_class: Type[S]) -> S | None:
+    def structured_generation(self, content: types.Content, structure_class: Type[S], response_json_schema: dict) -> S | None:
         result: S | None = None
+        
+        if self.generation_config:
+            self.generation_config.response_json_schema = response_json_schema
 
         for retry in range(self.retries + 1):
             

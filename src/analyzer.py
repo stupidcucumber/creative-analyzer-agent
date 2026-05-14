@@ -73,7 +73,7 @@ class Analyzer:
             ]
         )
         
-        return self.analyzer_model.structured_generation(content=content, structure_class=AgentOutputContentCharacteristics)
+        return self.analyzer_model.structured_generation(content=content, structure_class=AgentOutputContentCharacteristics, response_json_schema=AgentOutputContentCharacteristics.model_json_schema())
 
     def _analyze_post(self, post: str) -> AgentOutputPostTextCharacteristics | None:
 
@@ -90,7 +90,7 @@ class Analyzer:
             ]
         )
         
-        return self.analyzer_model.structured_generation(content=content, structure_class=AgentOutputPostTextCharacteristics)
+        return self.analyzer_model.structured_generation(content=content, structure_class=AgentOutputPostTextCharacteristics, response_json_schema=AgentOutputPostTextCharacteristics.model_json_schema())
     
     def _extract_content_format(self, content_path: pathlib.Path) -> str:
 

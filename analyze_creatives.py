@@ -83,7 +83,8 @@ if __name__ == "__main__":
                         category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
                         threshold=types.HarmBlockThreshold.BLOCK_NONE,
                     ),
-                ]
+                ],
+                response_mime_type="application/json"
             )
         )
     )
