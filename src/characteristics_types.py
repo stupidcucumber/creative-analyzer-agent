@@ -260,7 +260,17 @@ class DatabaseEntry(AlgorithmicMetadata, AgentOutputContentCharacteristics, Agen
 
     @classmethod
     def create_table(cls, table_name: str, db_path: str = "data.sqlite3"):
+        
+        columns = cls.database_columns()
 
+        column_str = ", ".join(columns)
+        sql = f"CREATE TABLE IF NOT EXISTS {table_name} (id INTEGER PRIMARY KEY AUTOINCREMENT, {column_str});"
+        
+        with sqlite3.connect(db_path) as conn:
+            conn.execute(sql)
+
+    @classmethod
+    def database_columns(cls) -> list[str]:
         type_map = {
             str: "TEXT",
             int: "INTEGER",
@@ -275,8 +285,4 @@ class DatabaseEntry(AlgorithmicMetadata, AgentOutputContentCharacteristics, Agen
             null_stmt = "NOT NULL" if field.is_required() else ""
             columns.append(f"{name} {sql_type} {null_stmt}")
 
-        column_str = ", ".join(columns)
-        sql = f"CREATE TABLE IF NOT EXISTS {table_name} (id INTEGER PRIMARY KEY AUTOINCREMENT, {column_str});"
-        
-        with sqlite3.connect(db_path) as conn:
-            conn.execute(sql)
+        return columns

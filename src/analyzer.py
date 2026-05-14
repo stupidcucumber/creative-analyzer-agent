@@ -144,6 +144,9 @@ class Analyzer:
 
     def analyze(self, evaluate: bool = False) -> tuple[list[DatabaseEntry], list[int]]:
 
+        if not evaluate and not pathlib.Path(self.database).exists():
+            DatabaseEntry.create_table("marketing", db_path=self.database)
+
         entries = []
         failed_entries = []
         for creative in self.creatives:
