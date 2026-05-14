@@ -3,28 +3,28 @@ from src.enums.prompt import DatabasePromptPartEnum
 
 class CallToActionType(DatabasePromptPartEnum):
 
-    DIRECT_PURCHASE = (
-        "direct_purchase",
-        "A clear, friction-free instruction to buy or subscribe immediately.",
-        "Click the link below to grab your copy and start today."
+    ASSESSMENT_ENTRY = (
+        "assessment_entry",
+        "Encouraging the user to start a diagnostic quiz or interactive test to receive personalized insights.",
+        "Take the 1-minute quiz to discover your metabolic age and get your custom plan."
     )
 
-    LEAD_GENERATION = (
-        "lead_generation",
-        "An invitation to exchange contact information for a valuable resource or consultation.",
-        "Download our free strategy guide to see how these principles apply to your business."
-    )
-
-    ENGAGEMENT = (
-        "engagement",
-        "Encourages the audience to interact with the content to boost reach and build community.",
-        "Drop a comment with your biggest takeaway or share this with someone who needs to hear it."
+    DIRECT_CONVERSION = (
+        "direct_conversion",
+        "A high-intent instruction to immediately subscribe, start a trial, or claim a time-bound offer.",
+        "Start your 28-day challenge now for just $1 and claim your 80% discount."
     )
 
     LEARN_MORE = (
         "learn_more",
-        "A low-pressure request for the reader to explore more information before deciding.",
-        "Head over to our blog to see the full breakdown of the data."
+        "A low-pressure request for the user to explore more information about a specific feature or methodology.",
+        "Tap 'Learn More' to see how Somatic exercises can help you release stored stress."
+    )
+
+    COMMUNITY_ENGAGEMENT = (
+        "community_engagement",
+        "Inviting the user to interact with the content or join a group to build social proof and habit loops.",
+        "Tag a friend who needs to see this 10-minute routine or join our 100M+ community today."
     )
 
 

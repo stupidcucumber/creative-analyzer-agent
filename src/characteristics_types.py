@@ -11,7 +11,7 @@ from src.enums.value import ValueType
 from src.enums.hook_type import HookTypes, HookVisualFormatType
 from src.enums.body_logic import BodyLogic
 from src.enums.emotional_valence import EmotionalValenceType
-from src.enums.call_to_action import CallToActionType, CallToActionUrgencyType
+from src.enums.call_to_action import CallToActionType
 from src.enums.content import ContentType
 from src.enums.prompt import DatabasePromptPartEnum
 
@@ -113,23 +113,43 @@ class AgentOutputContentHookCharacteristics(AgentCharacteristics):
 
     content_hook: Optional[str] = Field(
         None, 
-        description="A short, attention-grabbing text or concept used at the very beginning of the visual content."
+        description=(
+            "The primary 'scroll-stopper' or 'pattern interrupt' text/concept. "
+            "In BetterMe ads, this typically addresses a specific pain point (e.g., 'Somatic exercises for belly fat') "
+            "or a curiosity gap designed to halt the user's feed-scrolling."
+        )
     )
+
     content_hook_length_seconds: Optional[int] = Field(
         None, 
-        description="The duration of the hook segment in seconds. Usually between 1-5 seconds."
+        description=(
+            "The precise window of the initial hook. For BetterMe's high-retention clips, "
+            "this is usually a tight 1-5 second interval where the core value proposition is established."
+        )
     )
+
     content_hook_visual_format: Optional[HookVisualFormatType] = Field(
         None, 
-        description="The visual style of the hook."
+        description=(
+            "The aesthetic delivery method of the hook. Evaluates if the ad uses split-screen comparisons, "
+            "raw UGC-style footage for relatability, or data-driven graphical overlays."
+        )
     )
+
     content_hook_type: Optional[HookTypes] = Field(
         None, 
-        description="The type of the hook."
+        description=(
+            "The psychological mechanism of the opener—whether it's a diagnostic question about the user's body, "
+            "a counter-intuitive shocking fact, or an immediate before-and-after transformation teaser."
+        )
     )
+
     content_hook_emotional_valence: Optional[EmotionalValenceType] = Field(
         None, 
-        description="The intended emotional reaction to the hook."
+        description=(
+            "The immediate 'vibe' or emotional resonance of the hook. Identifies if the ad starts with "
+            "high-tension 'Pain/Agitation' or leans into the instant 'Aspirational Relief' of the product."
+        )
     )
 
 
@@ -137,11 +157,20 @@ class AgentOutputContentValueCharacteristics(AgentCharacteristics):
     
     content_product_value_type: Optional[ValueType] = Field(
         None, 
-        description="The primary value proposition offered."
+        description=(
+            "The core promise or 'The Why' behind the ad. In the context of BetterMe, "
+            "this focuses on the specific outcome (e.g., Transformation) or the "
+            "lifestyle fit (e.g., Frictionless Ease/No-Gym) promised to the user."
+        )
     )
+
     content_body_logic_type: Optional[BodyLogic] = Field(
         None, 
-        description="Logic behind proving that our product is indeed valuable."
+        description=(
+            "The rhetorical strategy used to build trust and prove the value. "
+            "BetterMe frequently uses educational teardowns (explaining cortisol/somatic science) "
+            "or social proof (user-led results) to overcome user skepticism."
+        )
     )
 
 
@@ -149,15 +178,20 @@ class AgentOutputContentCTACharacteristics(AgentCharacteristics):
 
     content_cta: Optional[str] = Field(
         None, 
-        description="The specific directive given to the viewer at the end of the content."
+        description=(
+            "The literal directive or command at the end of the video. "
+            "BetterMe usually anchors this in urgency or curiosity, such as "
+            "'Take the Quiz,' 'Claim my 28-day plan,' or 'Start my $1 trial'."
+        )
     )
+
     content_cta_type: Optional[CallToActionType] = Field(
         None, 
-        description="The category of the action."
-    )
-    content_cta_urgency_type: Optional[CallToActionUrgencyType] = Field(
-        None, 
-        description="The level of time-sensitivity or scarcity attached to the CTA."
+        description=(
+            "The strategic classification of the conversion goal. Focuses on whether "
+            "the ad drives the user to an interactive diagnostic "
+            "or an immediate subscription/trial start."
+        )
     )
 
 
@@ -177,15 +211,26 @@ class AgentOutputPostTextHookCharacteristics(AgentCharacteristics):
 
     post_hook: Optional[str] = Field(
         None, 
-        description="The opening line or sentence of the post designed to stop the scroll and entice further reading."
+        description=(
+            "The 'First Line' of the caption. In BetterMe copy, this is often a "
+            "bold statement or a relatable struggle (e.g., 'Stop fighting your body') "
+            "designed to make the reader click 'See More'."
+        )
     )
     post_hook_type: Optional[HookTypes] = Field(
         None, 
-        description="The rhetorical strategy of the opening line."
+        description=(
+            "The rhetorical structure of the text opener. Evaluates if the post "
+            "starts with a 'Shocking Fact' about metabolism or a 'Question' "
+            "targeting a specific life archetype like 'The Busy Professional'."
+        )
     )
     post_hook_emotional_valence: Optional[EmotionalValenceType] = Field(
         None, 
-        description="The intended emotional reaction to the hook."
+        description=(
+            "The emotional entry point of the text. Often starts with 'Pain/Agitation' "
+            "(e.g., burnout symptoms) to build empathy before pivoting to the solution."
+        )
     )
 
 
@@ -193,11 +238,19 @@ class AgentOutputPostTextValueCharacteristics(AgentCharacteristics):
 
     post_product_value_type: Optional[ValueType] = Field(
         None, 
-        description="The primary value proposition offered."
+        description=(
+            "The promise embedded in the caption body. This usually articulates the "
+            "'Frictionless Ease' of the method (e.g., 'Do it in your PJs') or the "
+            "mental 'Transformation' the user will undergo."
+        )
     )
     post_body_logic_type: Optional[BodyLogic] = Field(
         None, 
-        description="Logic behind proving that our product is indeed valuable."
+        description=(
+            "The evidence provided in the text. BetterMe often uses 'Educational Teardowns' "
+            "via bullet points to explain how the app solves a specific physiological "
+            "or psychological problem (e.g., cortisol regulation)."
+        )
     )
 
 
@@ -205,15 +258,18 @@ class AgentOutputPostTextCTACharacteristics(AgentCharacteristics):
 
     post_cta: Optional[str] = Field(
         None, 
-        description="The final sentence or phrase that instructs the reader on exactly what to do next."
+        description=(
+            "The final closing instruction. BetterMe captions usually end with "
+            "a high-urgency command or a curiosity-driven link description like "
+            "'Click below to find your metabolic age ⬇️'."
+        )
     )
     post_cta_type: Optional[CallToActionType] = Field(
         None, 
-        description="The category of the Call to Action."
-    )
-    post_cta_urgency_type: Optional[CallToActionUrgencyType] = Field(
-        None, 
-        description="The framing of the timeline."
+        description=(
+            "The conversion category for the text. Typically leads to an 'Assessment Entry' "
+            "(Quiz) or a 'Direct Conversion' for a limited-time trial offer."
+        )
     )
 
 
