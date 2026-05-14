@@ -56,41 +56,42 @@ class Analyzer:
 
         self.prompt = prompt if prompt else SYSTEM_PROMPT
 
+    def _get_content_system_prompt(self) -> str:
+        return self.prompt + AgentOutputContentCharacteristics.generate_prompt()
+    
+    def _get_post_system_prompt(self) -> str:
+        return self.prompt + AgentOutputPostTextCharacteristics.generate_prompt() + """\n\n--- ANALYZE POST BELOW ---\n"""
+
     def _analyze_content(self, content_path: pathlib.Path) -> AgentOutputContentCharacteristics | None:
-
-        if content_path.suffix == ".mp4":
-            mime_type = "video/mp4"
-
-        else:
-            mime_type = "image/jpeg"
 
         content = types.Content(
             parts=[
                 types.Part(
-                    inline_data=types.Blob(data=content_path.read_bytes(), mime_type=mime_type)
+                    inline_data=types.Blob(data=content_path.read_bytes(), mime_type="video/mp4" if content_path.suffix == ".mp4" else "image/jpeg")
                 ),
-                types.Part(text=self.prompt + AgentOutputContentCharacteristics.generate_prompt())
+                types.Part(text=self._get_content_system_prompt())
             ]
         )
         
-        return self.analyzer_model.structured_generation(content=content, structure_class=AgentOutputContentCharacteristics, response_json_schema=AgentOutputContentCharacteristics.model_json_schema())
+        return self.analyzer_model.structured_generation(
+            content=content, 
+            structure_class=AgentOutputContentCharacteristics
+        )
 
     def _analyze_post(self, post: str) -> AgentOutputPostTextCharacteristics | None:
 
         content = types.Content(
             parts=[
                 types.Part(
-                    text=(
-                        self.prompt + 
-                        AgentOutputPostTextCharacteristics.generate_prompt() +
-                        """\n\n--- ANALYZE POST BELOW ---\n""" +
-                        post
-                    )
+                    text=self._get_post_system_prompt() + post
                 ),
             ]
         )
         
-        return self.analyzer_model.structured_generation(content=content, structure_class=AgentOutputPostTextCharacteristics, response_json_schema=AgentOutputPostTextCharacteristics.model_json_schema())
+        return self.analyzer_model.structured_generation(
+            content=content, 
+            structure_class=AgentOutputPostTextCharacteristics
+        )
     
     def _extract_content_format(self, content_path: pathlib.Path) -> str:
 
@@ -121,17 +122,17 @@ class Analyzer:
         if published:
             item = self.additional_metadata.loc[index]
             return AlgorithmicMetadata(
-            published=published,
-            date_published=item["ad_creation_time"],
-            reach=item["reach"],
-            post_text=item["ad_text"],
-            product=item["product"],
-            content_type=(
-                ContentType.IMAGE if creative_path.suffix == ".jpg" else ContentType.VIDEO
-            ),
-            content_format=self._extract_content_format(content_path=creative_path),
-            content_id=index
-        )
+                published=published,
+                date_published=item["ad_creation_time"],
+                reach=item["reach"],
+                post_text=item["ad_text"],
+                product=item["product"],
+                content_type=(
+                    ContentType.IMAGE if creative_path.suffix == ".jpg" else ContentType.VIDEO
+                ),
+                content_format=self._extract_content_format(content_path=creative_path),
+                content_id=index
+            )
 
         return AlgorithmicMetadata(
             published=published,
