@@ -6,10 +6,11 @@ import json
 import random
 import sqlite3
 
+from src.enums.pacing import AdPacing
+from src.enums.value import ValueType
 from src.enums.hook_type import HookTypes, HookVisualFormatType
+from src.enums.body_logic import BodyLogic
 from src.enums.emotional_valence import EmotionalValenceType
-from src.enums.pov import PointOfViewType
-from src.enums.value import ValueType, ProofOfValueType
 from src.enums.call_to_action import CallToActionType, CallToActionUrgencyType
 from src.enums.content import ContentType
 from src.enums.prompt import DatabasePromptPartEnum
@@ -124,35 +125,23 @@ class AgentOutputContentHookCharacteristics(AgentCharacteristics):
     )
     content_hook_type: Optional[HookTypes] = Field(
         None, 
-        description="The rhetorical strategy of the opening line."
+        description="The type of the hook."
     )
     content_hook_emotional_valence: Optional[EmotionalValenceType] = Field(
         None, 
         description="The intended emotional reaction to the hook."
     )
-    content_hook_pov_type: Optional[PointOfViewType] = Field(
-        None, 
-        description="The perspective used in the hook."
-    )
 
 
 class AgentOutputContentValueCharacteristics(AgentCharacteristics):
-
-    content_barrier_reduction: Optional[str] = Field(
-        None, 
-        description="Text or visual cue that lowers the barrier to entry or addresses a common objection."
-    )
-    content_value_type: Optional[ValueType] = Field(
+    
+    content_product_value_type: Optional[ValueType] = Field(
         None, 
         description="The primary value proposition offered."
     )
-    content_proof_of_value_type: Optional[ProofOfValueType] = Field(
+    content_body_logic_type: Optional[BodyLogic] = Field(
         None, 
-        description="The method used to prove the claim."
-    )
-    content_value_pov_type: Optional[PointOfViewType] = Field(
-        None, 
-        description="The perspective from which the value is delivered."
+        description="Logic behind proving that our product is indeed valuable."
     )
 
 
@@ -177,7 +166,11 @@ class AgentOutputContentCharacteristics(
     AgentOutputContentValueCharacteristics, 
     AgentOutputContentCTACharacteristics
 ):
-    pass
+    
+    pacing: Optional[AdPacing] = Field(
+        None,
+        description="The speed at which ad engages with the user."
+    )
 
 
 class AgentOutputPostTextHookCharacteristics(AgentCharacteristics):
@@ -198,17 +191,13 @@ class AgentOutputPostTextHookCharacteristics(AgentCharacteristics):
 
 class AgentOutputPostTextValueCharacteristics(AgentCharacteristics):
 
-    post_barrier_reduction: Optional[str] = Field(
+    post_product_value_type: Optional[ValueType] = Field(
         None, 
-        description="Text within the body that simplifies complex ideas or removes friction/doubt for the reader."
+        description="The primary value proposition offered."
     )
-    post_value_type: Optional[ValueType] = Field(
+    post_body_logic_type: Optional[BodyLogic] = Field(
         None, 
-        description="The core utility of the text body."
-    )
-    post_proof_of_value_type: Optional[ProofOfValueType] = Field(
-        None, 
-        description="How the text validates its claims."
+        description="Logic behind proving that our product is indeed valuable."
     )
 
 
@@ -220,7 +209,7 @@ class AgentOutputPostTextCTACharacteristics(AgentCharacteristics):
     )
     post_cta_type: Optional[CallToActionType] = Field(
         None, 
-        description="The specific action requested."
+        description="The category of the Call to Action."
     )
     post_cta_urgency_type: Optional[CallToActionUrgencyType] = Field(
         None, 

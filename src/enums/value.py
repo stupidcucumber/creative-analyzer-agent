@@ -3,70 +3,28 @@ from src.enums.prompt import DatabasePromptPartEnum
 
 class ValueType(DatabasePromptPartEnum):
     
-    NEWNESS = (
-        "newness", 
-        "Creating new value propositions and constantly innovating to offer something unique.", 
-        "Innovation Managers seeking new technologies, methodologies, or products."
+    TRANSFORMATION_OUTCOME = (
+        "transformation_outcome", 
+        "Focusing on the tangible results and the 'Future Self.' Highlights physical, mental, or aesthetic changes.", 
+        "Achieving a '28-day glow up,' losing weight, or moving from 'always tired' to 'high energy', 'stopping the guilt of emotional eating,' 'healing your inner child,' or reducing anxiety.."
     )
 
-    PERFORMANCE = (
-        "performance", 
-        "Improving speed, efficiency, or functionality of products or services.", 
-        "A software company highlighting how their product increases productivity."
+    FRICTIONLESS_EASE = (
+        "frictionless_ease", 
+        "Emphasizing low effort, convenience, and removing barriers to entry like time, equipment, or location.", 
+        "Wall Pilates or Pajama Pilates routines that require 'no gym,' 'no equipment,' and only 10 minutes."
     )
 
-    PERSONALIZATION = (
-        "personalization", 
-        "Tailoring products or services to fit specific customer needs and unique experiences.", 
-        "Nike providing customization options where customers design their own shoes."
+    HYPER_PERSONALIZATION = (
+        "hyper_personalization", 
+        "The promise of a unique experience tailored specifically to the user's data, body type, or goals.", 
+        "Promoting a 'customized 28-day plan' based on quiz results or 'AI-powered' daily adjustments."
     )
 
-    GETTING_JOB_DONE = (
-        "getting_job_done", 
-        "Helping customers perform specific tasks efficiently and without much effort.", 
-        "Rolls Royce taking care of aircraft engine monitoring and maintenance."
-    )
-
-    DESIGN = (
-        "design", 
-        "Emphasizing aesthetics and visual appeal for customers who value well-designed offerings.", 
-        "Bang & Olufsen's elegant and stylish audio designs."
-    )
-
-    STATUS = (
-        "brand_status", 
-        "Aligning with customer aspirations and identity, or signaling wealth and success.", 
-        "Wearing luxury brands like Rolex or choosing sustainable brands to reflect consciousness."
-    )
-
-    PRICE = (
-        "price", 
-        "Offering products at a lower price point to attract price-sensitive customers.", 
-        "Discount retailers or budget airlines."
-    )
-
-    COST_REDUCTION = (
-        "cost_reduction", 
-        "Focusing on the overall cost-effectiveness and lowering operational costs for the customer.", 
-        "Medical equipment that reduces operational overhead for healthcare providers."
-    )
-
-    RISK_REDUCTION = (
-        "risk_reduction", 
-        "Mitigating risks and increasing certainty associated with using a product or service.", 
-        "Insurance apps that discourage phone use while driving to reduce accident risk."
-    )
-
-    ACCESSIBILITY = (
-        "accessibility", 
-        "Providing products or services to customers who previously lacked access.", 
-        "AliExpress enabling customers to access a vast range of global products conveniently."
-    )
-
-    CONVENIENCE = (
-        "convenience", 
-        "Focusing on usability and intuitive experiences to address complexity pain points.", 
-        "Apple's iPhone revolutionizing the industry with a user-friendly interface."
+    ECONOMIC_ADVANTAGE = (
+        "economic_advantage", 
+        "Focusing on price accessibility, high value-to-cost ratio, or comparing the app to expensive alternatives.", 
+        "Ads highlighting a '$1 trial' or claiming the app is 'cheaper than a personal trainer or gym membership'."
     )
 
 
