@@ -90,6 +90,12 @@ if __name__ == "__main__":
         )
     )
 
+    with open("content_system_prompt.txt", "w") as f:
+        f.write(analyzer._get_content_system_prompt())
+
+    with open("post_system_prompt.txt", "w") as f:
+        f.write(analyzer._get_post_system_prompt())
+
     successfull_entities, failed_entities = analyzer.analyze(evaluate=args.evaluate)
 
     with open("successfull_entities.json", "w") as f:

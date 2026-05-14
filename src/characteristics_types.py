@@ -23,14 +23,14 @@ class AgentCharacteristics(BaseModel):
     def generate_prompt(cls) -> str:
 
         structure = """
-# Explanations of required fields:
+## Explanations of required fields:
 
 {explanations}
 
-# Example of the output:
+## Example of the output:
 
 {examples}
-        """
+"""
 
         prompt_sections = []
         
