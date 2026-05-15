@@ -61,31 +61,48 @@ class ChatAgent:
 			error_context = f"\nПОПЕРЕДНЯ ПОМИЛКА: {state['error']}\nБудь ласка, виправ цей запит."
 
 		prompt = ChatPromptTemplate.from_template("""### Role
-Ти — експерт із Data Engineering та SQL Optimization. Твоє завдання: згенерувати точний та ефективний SQL-запит на основі текстового опису маркетингової задачі.
+Ти — експерт із Data Engineering та SQL Optimization. Твоє завдання: згенерувати точний та ефективний SQL-запит до бази даних SQLite на основі текстового запиту маркетолога.
 
 ### Schema Context
-Ось опис таблиць та колонок у базі даних з таблицею `marketing`:
+Ось опис таблиць та колонок у базі даних (основна таблиця `marketing`):
 {column_description}
 
 ### Constraints & Business Logic
-При генерації запиту суворо дотримуйся наступних правил:
-1. **Timeframe:** Якщо запит стосується "останнього тижня", використовуй `CURRENT_DATE - INTERVAL '7 days'`. Якщо "місяць" — `DATE_TRUNC('month', CURRENT_DATE)`.
-2. **Hook Uniqueness:** Для пошуку "нових хуків" використовуй `NOT EXISTS` або `LEFT JOIN ... WHERE ... IS NULL`, порівнюючи поточний період з усією історією до цього.
-3. **Metrics:** Reach — це сума (`SUM`), але якщо запит про формати — використовуй `AVG(reach)` для коректного порівняння ефективності різних типів контенту.
-4. **Performance:** Завжди додавай `LIMIT 100`, якщо не вказано інше, щоб не перевантажувати систему.
-5. **Format:** Повертай **ТІЛЬКИ** чистий SQL-код у блоку markdown. Без вступних фраз чи пояснень.
+1. ВИКОРИСТОВУЙ ТІЛЬКИ СИНТАКСИС SQLite! Ніяких `INTERVAL`, `DATEADD` чи `CURRENT_DATE`.
+2. Обов'язкова фільтрація дат: Завжди додавай умову `date_published IS NOT NULL`, якщо в запиті є хоч якась прив'язка до часу чи дат. 
+3. Обов'язковий вивід дати: Якщо запит пов'язаний з часом, результуючий `SELECT` повинен включати колонку `date_published` (або агрегацію по ній).
+4. Використовуй CTE (Common Table Expressions) `WITH ... AS (...)` для складних запитів (порівняння періодів, пошук нових сутностей), щоб запит був читабельним.
+5. Повертай ТІЛЬКИ валідний SQL-код без маркдаун-форматування (або строго в блоці ```sql), без додаткових пояснень.
+6. Результат виконання SQL запиту буде аналізувати ще один агент, тож додай в запит якомога більше колонок. В запиті обов'язково має бути присутня `date_published`, якщо треба агрегуй як максимальна дата в групі.
 
-### Task Cases Logic
-- **Top Hooks:** Фільтр за датою завантаження (`upload_date`) + `ORDER BY reach DESC`.
-- **New Hooks:** Порівняння множини хуків за останні 7 днів із множиною за попередній період.
-- **Ideal Creative:** Агрегація за всіма ключовими атрибутами (format, color, length, hook_type) з розрахунком середнього reach.
-- **Trends:** Використання `CASE WHEN` або двох `CTE`, щоб вирахувати Delta (%) між двома часовими проміжками.
+### Date & Time Handling in SQLite
+Для роботи з часом використовуй виключно функцію `date('now', '<modifier>')`. 
+Шпаргалка модифікаторів для цього завдання:
+- "сьогодні" -> `date('now')`
+- "останній тиждень" / "останні 7 днів" -> `>= date('now', '-7 days')`
+- "попередній тиждень" (для порівняння) -> `BETWEEN date('now', '-14 days') AND date('now', '-7 days')`
+- "останні 2 тижні" -> `>= date('now', '-14 days')`
+- "попередні 2 тижні до того" -> `BETWEEN date('now', '-28 days') AND date('now', '-14 days')`
+- "цього місяця" -> `>= date('now', 'start of month')`
+- "минулого місяця" -> `BETWEEN date('now', 'start of month', '-1 month') AND date('now', 'start of month')`
+
+### Task Cases & SQL Patterns
+Застосовуй ці підходи для відповідних типів питань:
+- **Top Hooks (Найкращі хуки за час X):** 
+  Фільтр `date_published >= ...` + `ORDER BY reach DESC`.
+- **New Hooks (Нові хуки за час X, яких не було раніше):** 
+  Використовуй підзапит. Знайти хуки, де `date_published >= [Current Period]`, і `hook NOT IN (SELECT hook FROM marketing WHERE date_published < [Current Period])`.
+- **Trends (Порівняння поточного періоду з попереднім):** 
+  Використовуй 2 CTE: `current_period` та `previous_period`. Зроби `FULL OUTER JOIN` або `LEFT JOIN` за ключовим атрибутом (наприклад, hook або format) і порахуй різницю (`reach_current - reach_previous`) або зміну у відсотках.
+- **Ideal Creative (Ідеальний креатив):** 
+  Використовуй агрегацію (наприклад, `AVG(reach)`) для різних атрибутів (формат, тривалість, хук). Знайди комбінацію атрибутів, яка історично дає найвищий середній `reach`. Згрупуй за цими атрибутами `GROUP BY ... ORDER BY AVG(reach) DESC LIMIT 1`.
+- **Best Formats (Найкращі формати за час X):**
+  Згрупуй за форматом (`GROUP BY format`), порахуй `AVG(reach)` або `SUM(reach)`, додай фільтр часу `WHERE date_published >= ...`.
 
 ### Input Question
 Користувач запитує: "{question}"
-											
-{error_context}
-		""")
+
+{error_context}""")
 		
 		question = state["messages"][-1].content
 		response = self.llm.invoke(prompt.format(
@@ -101,8 +118,14 @@ class ChatAgent:
 	def execute_sql_node(self, state: AgentState) -> dict:
 		print("\t\tExecuting SQL code.")
 		sql_query = state.get("generated_sql")
+
+		print("SQL Query: ", sql_query)
 		
 		try:
+
+			if "DELETE" in sql_query or "ALTER" in sql_query or "UPDATE" in sql_query or "INSERT" in sql_query:
+				raise sqlite3.Error("You can't use DELETE, ALTER, UPDATE, or INSERT.")
+
 			with sqlite3.connect(self.database_path) as conn:
 				conn.row_factory = sqlite3.Row
 				cursor = conn.cursor()
@@ -113,6 +136,8 @@ class ChatAgent:
 				
 		except sqlite3.Error as e:
 			return {"error": str(e), "sql_result": None}
+		
+		print("Result: ", str(result_list))
 		
 		return {"sql_result": str(result_list), "error": None}
 
@@ -134,6 +159,7 @@ class ChatAgent:
 Сформулюй коротку, професійну та аналітично обґрунтовану відповідь на питання: "{question}".
 
 ### Analysis Guidelines
+
 Залежно від типу питання, використовуй наступну логіку:
 
 1. **Топ хуки (за 7 днів):** Визнач креативи, завантажені за останні 168 годин. Відсортуй їх за `reach` та виділи конкретні гачки (hooks), які забезпечили максимальне охоплення.
