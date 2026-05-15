@@ -1,8 +1,89 @@
 # Характеристики креативів
 
-1. Body Logic (How? something can become valuable)
-2. Value (What? makes our app valuable)
-3. 
+## Характеристики відео/зображень (AgentOutputContentCharacteristics)
+Ця група полів аналізує структуру та психологічні тригери самого відео або зобреження.
+
+1. Хук
+
+`content_hook (Текст/концепція зачіпки)`: Перший елемент, що змушує користувача зупинити гортання стрічки (scroll-stopper). Зазвичай апелює до конкретної проблеми (наприклад, «соматичні вправи проти жиру на животі») або створює інтригу.
+
+`content_hook_length_seconds (Тривалість зачіпки)`: Точний хронометраж початкового хука. Для утримання уваги це зазвичай короткий інтервал від 1 до 5 секунд, де чітко артикулюється головна цінність.
+
+`content_hook_visual_format (Візуальний формат)`: Естетична подача хука. Визначає, що саме використовується: порівняння на розділеному екрані (split-screen), «живі» UGC-кадри (контент від звичайних користувачів) чи графічні інформаційні шари (overlays).
+
+`content_hook_type (Тип хука)`: Психологічний механізм початку відео. Це може бути діагностичне питання про тіло користувача, парадоксальний/шокуючий факт або демонстрація швидкої трансформації «до/після».
+
+`content_hook_emotional_valence (Емоційне забарвлення)`: Початковий емоційний настрій відео. Визначає, чи починається ролик з нагнітання проблеми («Біль/Роздратування»), чи одразу пропонує натхненне рішення («Прагнення до полегшення»).
+
+
+2. Ціннісна пропозиція (Value)
+
+`content_product_value_type (Тип цінності продукту)`: Головна обіцянка реклами («навіщо це мені?»). Фокусується на кінцевому результаті (трансформація) або на зручності стилю життя (наприклад, легкість виконання вправ без спортзалу).
+
+`content_body_logic_type (Логіка викладу)`: Риторична стратегія для побудови довіри та подолання скепсису. Може використовувати освітній розбір (пояснення науки про кортизол/соматику) або соціальний доказ (результати реальних користувачів).
+
+3. Заклик до дії (CTA)
+
+`content_cta (Текст заклику до дії)`: Фінальна пряма вказівка чи команда наприкінці відео. Базується на терміновості або цікавості, наприклад: «Пройди тест», «Забери свій план на 28 днів» чи «Почни пробний період за $1».
+
+`content_cta_type (Тип заклику до дії)`: Стратегічна класифікація цілі конверсії: переспрямування користувача на інтерактивну діагностику (квіз) чи на миттєве оформлення підписки/тріалу.
+
+4. Загальні параметри
+
+`pacing (Темп/Динаміка)`: Швидкість, з якою відео взаємодіє з користувачем і подає інформацію.
+
+## Характеристики тексту публікації (AgentOutputPostTextCharacteristics)
+Ця група аналізує копірайтинг — текст (caption), який супроводжує відео у публікації. Структура дублює логіку відео, але націлена на текстове сприйняття.
+
+1. Текстовий хук (Post Hook)
+
+`post_hook (Перший рядок)`: Текст-зачіпка на початку опису. Зазвичай це смілива заява або опис знайомої користувачу проблеми (наприклад, «Досить боротися зі своїм тілом»), мета якої — змусити натиснути кнопку «Читати далі» (See More).
+
+`post_hook_type (Тип текстового хука)`: Риторична структура початку тексту. Наприклад, шокуючий факт про метаболізм або запитання, таргетоване на конкретний архетип (наприклад, «Для зайнятих професіоналів»).
+
+`post_hook_emotional_valence (Емоційне забарвлення тексту)`: Точка емоційного входу. Часто починається з емпатичного опису болю чи втоми, щоб вибудувати зв'язок із читачем перед пропозицією рішення.
+
+2. Цінність у тексті (Post Value)
+
+`post_product_value_type (Тип цінності в тексті)`: Обіцянка, закладена в тілі тексту (наприклад, акцент на трансформації або на тому, що вправи можна робити «прямо в піжамі»).
+
+`post_body_logic_type (Логіка текстового викладу)`: Аргументація та докази в тексті. Часто реалізується через списки (bullet points), що пояснюють фізіологічні чи психологічні переваги застосунку (наприклад, регуляція кортизолу).
+
+4. Текстовий заклик до дії (Post CTA)
+
+`post_cta (Текст фінальної інструкції)`: Фінальний заклик у тексті, часто підсилений емодзі та дедлайном, наприклад: «Тисни нижче, щоб дізнатися свій метаболічний вік ⬇️».
+
+`post_cta_type (Тип текстового CTA)`: Категорія конверсії для тексту — перехід на проходження тесту (квізу) чи пряма конверсія на обмежену в часі пропозицію.
+
+## Алгоритмічні метадані (AlgorithmicMetadata)
+Технічні та статистичні параметри публікації, необхідні для системної аналітики та збереження в БД:
+
+`published (Статус публікації)`: Чи було оголошення опубліковано (True/False).
+
+`content_id (Ідентифікатор контенту)`: Унікальний числовий ID креативу.
+
+`content_type (Тип контенту)`: Категорія контенту за внутрішньою класифікацією.
+
+`content_format (Формат контенту)`: Опис формату (наприклад, розміри, співвідношення сторін або платформа).
+
+`product (Продукт)`: Назва продукту або застосунку, який рекламується.
+
+`date_published (Дата публікації)`: Дата, коли креатив став активним.
+
+`reach (Охоплення)`: Кількість унікальних користувачів, які побачили цю рекламу.
+
+`post_text (Повний текст)`: Весь текст публікації (копілефт) в оригінальному вигляді.
+
+# Яку модель було обрано і чому?
+Для цього демо я обрав Google (а не OpenAI, чи Claude) за його невисоку собівартість, а також різноманіття моделей, з якими можна попрацювати.
+
+Я протестував декілька моделей від Google:
+
+1. **Gemma 4 31B**. Повільний API, контексту як раз вистачає на промпт + зображення або промпт + відео, але не вистачає складності моделі для побудови закономірностей між заданими характеристиками та креативами. В результаті модель часто брала не ті частини тексту з посту, чи неправильно записувала, що було сказано у відео.
+2. **Gemini 2.5 Flash Lite**. Швидка, багато контексту, що дозволяє аналізувати відео довжиною більше ніж 60 секунд. Має достатню складність для аналізу закономірностей між характеристиками та креативами. Модель себе гарно показала, працювала швидко, але були проблеми з Content Value Type, та розумінням коли і де треба поставити null.
+3. **Gemini 2.5 Flash**. Все те саме, що і flash lite, але вона може будувати складніші логічні зв'язки. Показала себе найкраще, бо тепер є мінімальні проблеми з Content Value Type, а також модель на достатньо гарному рівні розуміє куди поставити null.
+
+Отже я обрав `Gemini 2.5 Flash` за швидкодію, вартість та точність.
 
 # Prompts для отримання характеристик креативів
 
@@ -42,17 +123,178 @@
 
 ### Гарні сторони
 
+1. Агент правильно ідентифікує CTA та Value в постах. Гарно витягує текст (Hook) з контенту.
+2. Агент розуміє емоційне спрямування поста
+
 ### Негативні сторони
 
+1. Агент іноді помиляється при визначенні довжини хуку. Мабуть це те, як всередині воно працює, LLM просто важко визначати довжину чогось.
+2. Іноді агент неправильно визначає `pacing`. Наприклад відео '870873419302426.mp4' та '1433361945187888.mp4' мають одну і ту саму основну частину, але при цьому мають `repetitive_rhythmic` та `calm_mindful` відповідно. Мені здається, що проблема в промпті, і що можна замінити на якісь інші категорії, чи підтюнити скрипт.
+
 ## Приклади аналізу
+
+### Нульовий приклад
+
+```json
+{
+    "post_cta": "Tap today.",
+    "post_cta_type": "direct_conversion",
+    "post_product_value_type": "frictionless_ease",
+    "post_body_logic_type": "objection_handling",
+    "post_hook": "⏳ I kept waiting for the “right moment” — more time, more energy, maybe a gym. It never came.",
+    "post_hook_type": "transformation",
+    "post_hook_emotional_valence": "pain_agitation",
+    "content_cta": "Tap now to start your transformation",
+    "content_cta_type": "direct_conversion",
+    "content_product_value_type": "transformation_outcome",
+    "content_body_logic_type": "demonstration",
+    "content_hook": "THE EASIEST WAY TO SHOCK EVERYONE WHO HASN'T SEEN YOU IN MONTHS.",
+    "content_hook_length_seconds": 3,
+    "content_hook_visual_format": "ugc",
+    "content_hook_type": "transformation",
+    "content_hook_emotional_valence": "aspirational_relief",
+    "pacing": "high_energy_fast",
+    "published": true,
+    "content_id": 951064930588755,
+    "content_type": "video",
+    "content_format": "9:16",
+    "product": "BetterMe",
+    "date_published": "2026-03-07",
+    "reach": 538897,
+    "post_text": "⏳ I kept waiting for the “right moment” — more time, more energy, maybe a gym. It never came. \nWhat worked was BetterMe Calisthenics 👣 \n15 min I could actually keep up with 👉 \nBig change starts small 🚀 Tap today."
+}
+```
+
+Все ідеально ідентифіковано.
+
+
+### Перший приклад
+
+```json
+{
+    "post_cta": "Rozwiąż 1-minutowy quiz 📊",
+    "post_cta_type": "assessment_entry",
+    "post_product_value_type": "hyper_personalization",
+    "post_body_logic_type": "educational_teardown",
+    "post_hook": "Osiągnij cele związane z mięśniami💪",
+    "post_hook_type": "transformation",
+    "post_hook_emotional_valence": "aspirational_relief",
+    "content_cta": "KLIKNIJ EKRAN, ABY DOŁĄCZYĆ!",
+    "content_cta_type": "'direct_conversion'",
+    "content_product_value_type": "transformation_outcome",
+    "content_body_logic_type": "objection_handling",
+    "content_hook": "SZUKAMY DZIEWCZYN KTÓRE NIE ĆWICZYŁY REGULARNIE i chcą osiągnąć wymarzoną sylwetkę w 2026 roku",
+    "content_hook_length_seconds": null,
+    "content_hook_visual_format": null,
+    "content_hook_type": "transformation",
+    "content_hook_emotional_valence": "aspirational_relief",
+    "pacing": null,
+    "published": true,
+    "content_id": 2099857124146357,
+    "content_type": "image",
+    "content_format": "9:16",
+    "product": "BetterMe",
+    "date_published": "2026-03-06",
+    "reach": 734709,
+    "post_text": "\"Osiągnij cele związane z mięśniami💪 \nTrzymaj się tego prostego planu, aby odnieść sukces: \n1. Rozwiąż 1-minutowy quiz 📊 \n2. Uzyskaj plan ćwiczeń i posiłków oparty na wadze, wzroście, wieku, codziennej aktywności i kondycji fizycznej📲 \n3. Postępuj zgodnie z programem 😎\""
+}
+```
+
+Тут правильно було ідентифіковано все. 
+1. Агент правильно проаналізував текст посту, ідентифікував `Rozwiąż 1-minutowy quiz 📊` як `assessment_entry` тип CTA.
+2. Агент правильно визначив CTA контенту: `KLIKNIJ EKRAN, ABY DOŁĄCZYĆ!` та `direct_conversion` тип.
+3. Агент правильно ідентифікував Hook `SZUKAMY DZIEWCZYN KTÓRE NIE ĆWICZYŁY REGULARNIE i chcą osiągnąć wymarzoną sylwetkę w 2026 roku` та тип хуку `transformation`.
+4. Агент неправильно ідентифікував `content_hook_visual_format`. На мою думку воно має бути `cinematic`, бо це найближче серед усіх типів. Мабуть би я додав ще тип `photorealistic`. 
+
+### Другий приклад
+
+```json
+{
+    "post_cta": null,
+    "post_cta_type": null,
+    "post_product_value_type": "transformation_outcome",
+    "post_body_logic_type": "educational_teardown",
+    "post_hook": "Your body can become the equipment. Try Calisthenics.",
+    "post_hook_type": "call_to_action",
+    "post_hook_emotional_valence": "diagnostic_authority",
+    "content_cta": "TAP THE SCREEN TO JOIN US",
+    "content_cta_type": "direct_conversion",
+    "content_product_value_type": "transformation_outcome",
+    "content_body_logic_type": "demonstration",
+    "content_hook": "IF YOU START CALISTHENICS ON MARCH 16TH YOU'LL BE UNRECOGNIZABLE BY MAY",
+    "content_hook_length_seconds": 3,
+    "content_hook_visual_format": "ugc",
+    "content_hook_type": "transformation",
+    "content_hook_emotional_valence": "aspirational_relief",
+    "pacing": "high_energy_fast",
+    "published": true,
+    "content_id": 1888741965847477,
+    "content_type": "video",
+    "content_format": "9:16",
+    "product": "BetterMe",
+    "date_published": "2026-03-16",
+    "reach": 1107501,
+    "post_text": "Your body can become the equipment. Try Calisthenics.\n\nInstead of machines and weights, this 28-day plan teaches your body to move, hold, and build strength using its own resistance.\nYou’ll develop:\n💪 Stronger arms and shoulders\n🔥 A tight, active core\n🦵 Powerful legs and glutes\n⚡ Better balance and control\n\nYour 28-Day Calisthenics Plan\n🟢 Week 1: Learn foundational bodyweight moves\n🟢 Week 2: Build control and core stability\n🟢 Week 3: Increase strength and endurance\n🟢 Week 4: Move with power and confidence\n\n🏠 No equipment needed\n⏱ Short daily sessions\n💪 Strength built with your own body\n\n✨ When your body becomes the resistance, strength feels different."
+}
+```
+
+1. Правильно ідентифіковано `ugc`, `pacing`, `content_product_value_type`, `content_body_logic_type`, `content_cta`, `content_cta_type` etc.
+2. Є деяка проблема з `content_hook_length_seconds`, так як Агент сказав, що воно протягом 3 seconds, однак насправді вого протягом 5 seconds.
+
+### Третій приклад
+
+```json
+{
+    "post_cta": "Inizia la trasformazione ora!",
+    "post_cta_type": "assessment_entry",
+    "post_product_value_type": "hyper_personalization",
+    "post_body_logic_type": "demonstration",
+    "post_hook": "Raggiungi i tuoi obiettivi facilmente 💪",
+    "post_hook_type": "transformation",
+    "post_hook_emotional_valence": "aspirational_relief",
+    "content_cta": "TOCCA PER PARTECIPARE",
+    "content_cta_type": "direct_conversion",
+    "content_product_value_type": "transformation_outcome",
+    "content_body_logic_type": "objection_handling",
+    "content_hook": "CERCHIAMO UOMINI che non si allenano da anni e vogliono diventare irriconoscibili nel 2026",
+    "content_hook_length_seconds": null,
+    "content_hook_visual_format": "cinematic",
+    "content_hook_type": "transformation",
+    "content_hook_emotional_valence": "aspirational_relief",
+    "pacing": null,
+    "published": true,
+    "content_id": 1612214663311424,
+    "content_type": "image",
+    "content_format": "9:16",
+    "product": "BetterMe",
+    "date_published": "2026-03-06",
+    "reach": 661560,
+    "post_text": "Raggiungi i tuoi obiettivi facilmente 💪\n\n1️⃣ Fai un quiz di 1 minuto\n2️⃣ Ottieni un programma personalizzato\n3️⃣ Traccia i progressi e tieniti motivato\n4️⃣  Vedi risultati visibili in 4 settimane!\nInizia la trasformazione ora!"
+}
+```
+
+1. Правильно ідентифіковано `content_hook_emotional_valence`, `content_hook_visual_format`, CTA, Value.
 
 # Chat-bot Agent
 
 ## З чого складається?
 
-### Приклади відповідей на обов'язкові питання
+Чат бот є `Directed Graph`, з наступними етапами:
 
-### Приклади відповідей на додаткові питання
+0. Отримання питання від користувача через Телеграм (aiogram).
+1. Аналіз поставленої задачі та генерація SQL.
+2. Виконання SQL для отримання даних з БД.
+3. Аналіз отриманих даних та співставлення з питанням користувача, та формування відповіді.
+4. Відповідь через Телеграм (aiogram).
+
+Для побудови агента було використано:
+
+1. `LangChain` та `LangGraph`. Побудова графу та виклик `LLM`.
+2. `aiogram`. Зручна бібліотека для написання інтерфейсу з телеграмом. 
+
+## Приклади відповідей на обов'язкові питання
+
+## Приклади відповідей на додаткові питання
 
 # Які покращення можна зробити?
 
@@ -93,4 +335,4 @@ if analysis_object.post_cta = None:
     analysis_object.post_cta_type = None
 ```
 
-То це забезпечуватиму 100% того, що у нас CTA буде всюди Null, тож дані будуть "чистіше".
+То це забезпечуватиме 100% того, що у нас CTA буде всюди Null, тож дані будуть "чистіше".
