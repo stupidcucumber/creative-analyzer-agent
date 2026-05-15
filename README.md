@@ -1,86 +1,96 @@
-# creative-analyzer-agent
-RAG + ChatBOT that analyzes performance of various creatives.
+# Характеристики креативів
 
-## How to run this?
+1. Body Logic (How? something can become valuable)
+2. Value (What? makes our app valuable)
+3. 
 
+# Prompts для отримання характеристик креативів
 
-## General Information
+## З чого складається промпт?
 
-### Key Characteristics of the Creative
-Let's derive our key characteristics of a creative more abstractly.
+Промпт складається з двох головних частин:
+1. Преамбула. Містить в собі загальні інструкції, як, наприклад, структура відповіді, роль, рекомендації по аналізу.
+2. Функціональна частина. Вона дуже тісно пов'язана з самою структурою даних, яку ми записуємо в базу даних. Тут описується, що кожна колонка в таблиці означає, які значення вона може приймати і, що кожне з цих значень у свою чергу означає.
 
-|Name|Description|
-|----|-----------|
-|Hook|What was used to stop user from scrolling further?|
-|Value|How creative shows value to its viewers?|
-|Call to action|How creative makes user to do something?|
+Чому так? Ця структура дозволяє бути гнучкою в інструкціях ЯК обробляти даних, але в той самий час вона строго описує те, ЩО ми хочемо отримати від моделі, чітко описуючи значення та приклади.  
 
-Now what will constitute an entry in our database?
-1. Hook:
-    1) Hook Type (Call-Out, Pattern Interrupt, Negative, Social Proof, Specific Result)
-    2) Hook Text (I will use Gemini STT model to extract subtitles from the video)
-    3) Hook Emotional Valence (Positive, Negative, Neutral, Educational)
-    4) Hook Length (If applicable)
-    5) Hook POV (First-person, Direct address, Third-person)
-    6) Hook Visual Format (UGC, Studio/Cinematic, Motion Graphics)
-2. Value:
-    1) Value Type (Educational/Informational, Entertainment, Transformational, Economic)
-    2) Proof Of Value (Demonstration, Social Proof, Authority/Credentials, Before vs. After)
-    3) Barrier Reduction
-    4) Value POV (First-person, Direct address, Third-person)
-4. Call to Action:
-    1) CTA Urgency/Scarcity (Time-Bound, Quantity-Bound) 
-    2) CTA Text
-    3) CTA Type (Direct, Soft/Low-Friction, Instructional)
-5. Other metadata:
-    1) Date of publication
-    2) Reach
-    3) Content Type (Video, Image)
-    4) Content format (9:16, 1:1, 4:5, etc.)
-    5) Content language
-    6) Ad text
+## Як відбувалось покращення промтів?
 
-Other columns that might be helpful:
-1. Hook-Body Bridge Type. How do you transition from Hook to Body?
-2. Value Barrier Reduction. Why is it so easy about the product that it is valuable?
+Я відібрав 10 рандомних креативів (3 зображення та 7 відео), і запускав на кожному промпті LLM для аналізу. Далі я вручну перевіряв те, наскільки гарні були відповіді та будував гіпотези, далі я робив покращення та перевіряв, чи не стало краще.
 
+### Відбір тестового датасету
 
-### Чат-бот повинен відповідати на запитання, спираючись на базу даних проаналізованих креативів. Обов'язкові запитання:
-1. "Сформуй список найкращих хуків за останній тиждень" — топ хуки за reach серед креативів, завантажених за останні 7 днів.
-2. "Сформуй список нових хуків за останній тиждень, яких не було до цього" — хуки, які вперше з'явились у нових креативах і не зустрічались раніше.
-3. "Сформуй ідеальний креатив на основі даних" — агент аналізує кореляцію між атрибутами та reach і генерує опис найефективнішого можливого креативу.
-4. "Які формати показують найкращий reach цього місяця?" — порівняння відео vs зображення, 9:16 vs 1:1 тощо.
-5. "Покажи тренди: що змінилось у підходах за останні 2 тижні порівняно з попередніми?"
-6. (Custom question) "Які емоції отримали найвищий reach за останні 2 тижні?"
-7. (Custom question) "Який proof-of-value має найгірший reach?"
-(Власне питання кандидата — заохочується додати 1–2 власних)
+Було відібрано 10% усього датасету як "тренування". Важливо було врахувати співвідношення зображень до відео, бо відео у нас набагато більше, тож треба і приділяти більше уваги. В результаті отримано 3 зображення та 7 відео.
 
+### Версіонування промптів
 
-### Methodology & testing
-1. Separate 15 samples from the data (make it so ratio of images/videos will be the same as in the training data, and the same as in the whole dataset).
-2. Semi-manually annotate those 15 samples by first annotating them with a simple prompt, and then correct any errors in the data. At this point Database scheme must be ready.
-3. Define metrics that are crucial for prompt quality. Then test prompt and save results in the database.
+Версіювання промптів відбувається за допомогою `prompt_{prompt_version}_{commit_hash}`. При цьому створюється окрема папка з назвою "prompts". 
 
+Чому включати в це хеш коміту? Річ у тім, що функціональна частина промпту є частиною коду, що в даному випадку забезпечує `inheritent versioning` та дозволяє не хвилюватись, що десь лежить якийсь txt файл.
 
-## Technical Information
+### Тестування промптів
 
-### Database
+Я спочатку думав, що передивлюсь вручну всі 10 відео, але після декількох ітерацій я зрозумів, що без експертної думки моя оцінка така ж сама, що й в LLM.
 
-### Prompt evolution
+Якщо коротко, то я:
+1. Проганяв модель на 10 рандомних креативах
+2. Дивився де, як я думав вона помилилась
+3. Будував гіпотези, чому так вийшло
+4. Перевіряв гіпотезу, змінюючи щось
 
-1. prompt_v0.txt included only basic instructions like persona and task.
-2. prompt_v1.txt added "CRITICAL INSTRUCTIONS FOR OUTPUT", which helps LLM to structure output better. Like in what format it must provide and what to put if there is no CTA in the post/content.
+## Підсумування промптів
 
-## Improvements
+### Гарні сторони
 
+### Негативні сторони
 
-### Prompt
+## Приклади аналізу
 
+# Chat-bot Agent
 
-### Access to more in-depth analytics
+## З чого складається?
 
+### Приклади відповідей на обов'язкові питання
 
-### Storage
-Change from Google Drive to S3 storage. Right now to analyze anything you need to download creatives first to your local machine, and then upload to Google Gemini, or any other neural network through FileAPI. Which is slow, and can be a speed bottleneck in the future.
+### Приклади відповідей на додаткові питання
 
-S3 storage, for example, allows flagship Google Models like Gemini access files right away without the need of spending minutes to upload a sequence of creatives.
+# Які покращення можна зробити?
+
+## Golden Set для автоматизованого тестування промпту
+
+Як завжди відбувається в продукті, а це по-суті внутрішній продукт, де наші користувачі – маркетологи та аналітики, треба слухати кінцевого користувача. Найкраща порада так це витратити певний час, щоб зрозуміти:
+
+1. Яка структура креативу? (Для розкриття моєї думки, я буду вважати, що будь-який креатив має "Хук", "Цінність", та "Заклик до дії").
+2. Що може описувати "Хук"? Чи є якісь чіткі категорії, на які можна поділити "Хуки"?
+3. Чи є якісь характеристики креативу, які не можна поділити на категорії?
+4. Які питання найбільш поширені?
+
+Я намагався відповісти на ці питання самотужки, запитуючи в Gemini та читаючи маркетингові пости, але як на мене у мене вийшли не такі гарні описи категорій, та їхніх значень. Однак маючи відповіді на ці питання від експертів ми можемо побудувати гарну функціональну частину нашого промпту. 
+
+Далі треба продивитись мевні креативи та вручну розмітити їх за допомогою експертної оцінки. В подальшому цю розмітку можна використовувати як для дотренування якоїсь `SLM` (маленької Language Model), так і для тестування преамбули як `golden set`.
+
+Намагатись підлаштувати преамбулу, щоб воно якомога краще відповідало `golden set`.
+
+## Dagster для обробки та збереження даних
+
+Я витратив час на побудову пайплайну для витягування метаданих та обробку відео. Я би для цього рекомендував використовувати `Dagster`, чи щось подібне. Використовуючи цей оркестратор можна буде розбити обробку, збереження та аналіз даних на окремі кроки, і повноцінно автоматизувати весь процес ще більше:
+
+1. Завантаження креативу на `Google Drive` чи `Google S3`. Сенсор буде слідкувати, як тільки сенсор бачить, що було додано новий креатив, то ми його скачуємо на якийсь `Compute Service`.
+2. На цьому Compute Service ми робимо аналіз креативу.
+3. Аналіз креативу записуємо в `Elastic Search`, чи `BigQuery`.
+
+Код стає простіше, обробка даних прозоріша, одразу можна побачити де і що іде не так.
+
+## Logical Guardrails
+
+Зазвичай промпт не є якимось законом для моделі, а скоріше він є "наставленням". Модель не зобов'язана його слухати і робить як заманеться. Поки я покращував промпти, то у мене ідея: додати якісь правила вже на структуровану відповідь, які ми називатимемо `logical guardrails`.
+
+Наприклад, часто модель каже, що `post_cta=none`, водночас каже `post_cta_type="assessment_entry"`. Якщо вкінці ми додамо правило:
+```py
+analysis_object = llm.analyze(post)
+
+if analysis_object.post_cta = None:
+    analysis_object.post_cta_type = None
+```
+
+То це забезпечуватиму 100% того, що у нас CTA буде всюди Null, тож дані будуть "чистіше".
