@@ -171,6 +171,12 @@ class Analyzer:
                 failed_entries.append(creative_id)
                 continue
 
+            if agent_output_content_characteristics is None:
+                agent_output_content_characteristics = AgentOutputContentCharacteristics.null()
+
+            if agent_output_post_characteristics is None:
+                agent_output_post_characteristics = AgentOutputPostTextCharacteristics.null()
+
             print("\tExtracting metadata.")
             algorithmic_metadata = self._extract_algorithmic_metadata(
                 creative_path=creative, 
