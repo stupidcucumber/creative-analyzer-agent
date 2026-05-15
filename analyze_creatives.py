@@ -62,7 +62,7 @@ if __name__ == "__main__":
         creatives=objects_to_process,
         additional_metadata=pd.read_csv(args.additional_metadata, index_col=0),
         analyzer_model=GeminiAnalyzerModel(
-            model_type=GeminiModelType.GEMINI_2_5_FLASH_LITE,
+            model_type=GeminiModelType.GEMINI_2_5_FLASH,
             retries=3,
             retry_delay=2,
             config=types.GenerateContentConfig(
