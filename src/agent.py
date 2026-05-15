@@ -123,7 +123,12 @@ class ChatAgent:
 		
 		try:
 
-			if "DELETE" in sql_query or "ALTER" in sql_query or "UPDATE" in sql_query or "INSERT" in sql_query:
+			if (
+				"DELETE" in sql_query.upper() or 
+				"ALTER" in sql_query.upper() or 
+				"UPDATE" in sql_query.upper() or 
+				"INSERT" in sql_query.upper()
+			):
 				raise sqlite3.Error("You can't use DELETE, ALTER, UPDATE, or INSERT.")
 
 			with sqlite3.connect(self.database_path) as conn:
